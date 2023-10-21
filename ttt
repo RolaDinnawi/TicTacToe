@@ -1,0 +1,133 @@
+import java.util.Scanner;
+
+public class TicTacToe {
+    public static void main(String[] args) {
+        Scanner console = new Scanner(System.in);
+        String ans;
+        
+        do {
+            int rounds = 0, player1 = 0, player2 = 0, ties = 0;
+            
+            do {
+                rounds++;
+                String[][] grid = new String[3][3];
+                initializeGrid(grid);
+                printGrid(grid);
+                boolean win = false;
+                boolean isPlayer1 = true;
+
+                do {
+                    int[] move = getPlayerMove(console, grid, isPlayer1);
+                    int x = move[0];
+                    int y = move[1];
+                    grid[x][y] = isPlayer1 ? "X" : "O";
+                    printGrid(grid);
+                    win = checkWin(grid);
+                    isPlayer1 = !isPlayer1;
+                } while (!win && !isGridFull(grid));
+
+                if (win) {
+                    if (isPlayer1) {
+                        System.out.println("Player 2 wins!");
+                        player2++;
+                    } else {
+                        System.out.println("Player 1 wins!");
+                        player1++;
+                    }
+                } else {
+                    System.out.println("It's a tie!");
+                    ties++;
+                }
+
+                System.out.println("Play another round? (yes/no)");
+                ans = console.next();
+            } while (ans.equalsIgnoreCase("yes"));
+
+            System.out.printf("Rounds played: %d\nPlayer 1's wins: %d\nPlayer 2's wins: %d\nTies: %d\n", rounds, player1, player2, ties);
+
+            System.out.println("Play again? (yes/no)");
+            ans = console.next();
+        } while (ans.equalsIgnoreCase("yes"));
+
+        console.close();
+    }
+
+    public static void initializeGrid(String[][] grid) {
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                grid[i][j] = " ";
+            }
+        }
+    }
+
+    public static void printGrid(String[][] grid) {
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                System.out.print(grid[i][j]);
+                if (j < 2) {
+                    System.out.print(" | ");
+                }
+            }
+            System.out.println();
+            if (i < 2) {
+                System.out.println("---------");
+            }
+        }
+    }
+
+    public static int[] getPlayerMove(Scanner console, String[][] grid, boolean isPlayer1) {
+        int[] move = new int[2];
+        String player = isPlayer1 ? "Player 1" : "Player 2";
+
+        while (true) {
+            System.out.print(player + ", enter your move (row and column): ");
+            move[0] = console.nextInt();
+            move[1] = console.nextInt();
+
+            if (isValidMove(move, grid)) {
+                return move;
+            } else {
+                System.out.println("Invalid move. Try again.");
+            }
+        }
+    }
+
+    public static boolean isValidMove(int[] move, String[][] grid) {
+        int row = move[0];
+        int col = move[1];
+        return row >= 0 && row < 3 && col >= 0 && col < 3 && grid[row][col].equals(" ");
+    }
+
+    public static boolean checkWin(String[][] grid) {
+        for (int i = 0; i < 3; i++) {
+            // Check rows and columns
+            if (grid[i][0].equals(grid[i][1]) && grid[i][1].equals(grid[i][2]) && !grid[i][0].equals(" ")) {
+                return true;
+            }
+            if (grid[0][i].equals(grid[1][i]) && grid[1][i].equals(grid[2][i]) && !grid[0][i].equals(" ")) {
+                return true;
+            }
+        }
+
+        // Check diagonals
+        if (grid[0][0].equals(grid[1][1]) && grid[1][1].equals(grid[2][2]) && !grid[0][0].equals(" ")) {
+            return true;
+        }
+        if (grid[0][2].equals(grid[1][1]) && grid[1][1].equals(grid[2][0]) && !grid[0][2].equals(" ")) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public static boolean isGridFull(String[][] grid) {
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                if (grid[i][j].equals(" ")) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+}
